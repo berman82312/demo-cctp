@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { headers } from "next/headers";
+import {AppRouterCacheProvider} from '@mui/material-nextjs/v14-appRouter';
 import ContextProvider from "./context/WagmiContextProvider";
 import "./globals.css";
 
@@ -32,9 +33,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ContextProvider cookies={cookies}>
-          {children}
-        </ContextProvider>
+        <AppRouterCacheProvider>
+          <ContextProvider cookies={cookies}>
+            {children}
+          </ContextProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
