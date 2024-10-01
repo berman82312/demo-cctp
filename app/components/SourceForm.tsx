@@ -8,8 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { ListItemIcon, ListItemText } from '@mui/material';
 import Image from 'next/image';
-import SepoliaIcon from '@/app/icons/sepolia.svg';
-import BaseSepoliaIcon from '@/app/icons/base-sepolia.svg';
+import { BaseSepolia, Sepolia } from '../config/chains';
 
 export default function SourceForm() {
   const [source, setSource] = React.useState('');
@@ -29,20 +28,20 @@ export default function SourceForm() {
           label="From Chain"
           onChange={handleChange}
         >
-          <MenuItem value={'sepolia'}>
+          <MenuItem value={Sepolia.id}>
             <div style={{display: 'flex', alignItems: 'center'}}>
               <ListItemIcon>
-                <Image src={SepoliaIcon} height={32} width={32} alt="Sepolia" />
+                <Image src={Sepolia.icon} height={32} width={32} alt={Sepolia.name}/>
               </ListItemIcon>
-              <ListItemText>Sepolia</ListItemText>
+              <ListItemText>{Sepolia.name}</ListItemText>
             </div>
           </MenuItem>
-          <MenuItem value={'base_sepolia'}>
+          <MenuItem value={BaseSepolia.id}>
             <div style={{display: 'flex', alignItems: 'center'}}>
               <ListItemIcon>
-                <Image src={BaseSepoliaIcon} height={32} width={32} alt="Base Sepolia" />
+                <Image src={BaseSepolia.icon} height={32} width={32} alt={BaseSepolia.name}/>
               </ListItemIcon>
-              <ListItemText>Base Sepolia</ListItemText>
+              <ListItemText>{BaseSepolia.name}</ListItemText>
             </div>
           </MenuItem>
         </Select>
