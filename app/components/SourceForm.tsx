@@ -6,18 +6,16 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { ListItemIcon, ListItemText } from '@mui/material';
-import Image from 'next/image';
 import { AllChains, ChainConfig } from '../config/chains';
 import { useAccount } from 'wagmi';
-import { UserBalance } from './UserBalance';
+import { AccountBalance } from './AccountBalance';
+import { ChainItem } from './ChainItem';
 
 export default function SourceForm() {
   const { address } = useAccount()
   const [source, setSource] = useState<ChainConfig['id']>('');
 
   const sourceChain = AllChains.find(chain => chain.id === source)
-
   const showBalance = !!address && !!sourceChain
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -41,19 +39,8 @@ export default function SourceForm() {
             </MenuItem>
           ))}
         </Select>
-        {showBalance && (<p className="py-4">Your balance: <UserBalance address={address} chainId={sourceChain.chainId} token={sourceChain.usdc} /></p>)}
+        {showBalance && (<p className="py-4">Balance: <AccountBalance address={address} chainId={sourceChain.chainId} token={sourceChain.usdc} /></p>)}
       </FormControl>
     </Box>
-  );
-}
-
-function ChainItem({ chain }: { chain: ChainConfig }) {
-  return (
-    <div style={{ display: 'flex' }}>
-      <ListItemIcon>
-        <Image src={chain.icon} height={32} width={32} alt={chain.name} />
-      </ListItemIcon>
-      <ListItemText>{chain.name}</ListItemText>
-    </div>
   );
 }

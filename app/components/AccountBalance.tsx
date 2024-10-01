@@ -2,13 +2,13 @@ import { Address } from "@/app/types/models";
 import { erc20Abi, formatEther, formatUnits } from "viem";
 import { useAccount, useBalance, useReadContract } from "wagmi";
 
-type UserBalanceProps = {
+type AccountBalanceProps = {
     address: Address;
     token: Address;
     chainId: number;
 }
 
-export const UserBalance = (props: UserBalanceProps) => {
+export const AccountBalance = (props: AccountBalanceProps) => {
     const {
         address,
         token,
@@ -33,7 +33,5 @@ export const UserBalance = (props: UserBalanceProps) => {
         return null
     }
 
-    return (
-        <span>{formatUnits(data ?? BigInt(0), decimal)} USDC</span>
-    )
+    return `${formatUnits(data ?? BigInt(0), decimal)} USDC`
 }

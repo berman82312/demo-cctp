@@ -6,12 +6,17 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { ListItemIcon, ListItemText } from '@mui/material';
-import Image from 'next/image';
-import { BaseSepolia, Sepolia } from '../config/chains';
+import { AllChains } from '../config/chains';
+import { ChainItem } from './ChainItem';
+import { useAccount } from 'wagmi';
+import { AccountBalance } from './AccountBalance';
 
 export default function DestinationForm() {
+  const { address } = useAccount()
   const [destination, setDestination] = React.useState('');
+
+  const destinationChain = AllChains.find(chain => chain.id === destination)
+  const showBalance = !!address && !!destinationChain
 
   const handleChange = (event: SelectChangeEvent) => {
     setDestination(event.target.value as string);
@@ -28,23 +33,13 @@ export default function DestinationForm() {
           label="To Chain"
           onChange={handleChange}
         >
-          <MenuItem value={Sepolia.id}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <ListItemIcon>
-                <Image src={Sepolia.icon} height={32} width={32} alt={Sepolia.name}/>
-              </ListItemIcon>
-              <ListItemText>{Sepolia.name}</ListItemText>
-            </div>
-          </MenuItem>
-          <MenuItem value={BaseSepolia.id}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <ListItemIcon>
-                <Image src={BaseSepolia.icon} height={32} width={32} alt={BaseSepolia.name}/>
-              </ListItemIcon>
-              <ListItemText>{BaseSepolia.name}</ListItemText>
-            </div>
-          </MenuItem>
+          {AllChains.map(chain => (
+            <MenuItem value={chain.id} key={`chain_item_${chain.id}`}>
+              <ChainItem chain={chain} />
+            </MenuItem>
+          ))}
         </Select>
+        {showBalance && (<p className="py-4">Balance: <AccountBalance address={address} chainId={destinationChain.chainId} token={destinationChain.usdc} /></p>)}
       </FormControl>
     </Box>
   );
