@@ -2,7 +2,7 @@ import { baseSepolia, sepolia, type Chain } from "viem/chains";
 
 type PublicPath = string;
 
-type ChainConfig = {
+export type ChainConfig = {
     id: string,
     name: string,
     chainId: Chain['id'],
@@ -28,3 +28,8 @@ export const BaseSepolia: ChainConfig = {
     icon: '/icons/base-sepolia.svg',
     isTestnet: true
 }
+
+export const AllChains = [
+    Sepolia,
+    BaseSepolia
+]

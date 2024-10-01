@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { ListItemIcon, ListItemText } from '@mui/material';
 import Image from 'next/image';
-import { BaseSepolia, Sepolia } from '../config/chains';
+import { AllChains, ChainConfig } from '../config/chains';
 
 export default function SourceForm() {
   const [source, setSource] = React.useState('');
@@ -28,24 +28,22 @@ export default function SourceForm() {
           label="From Chain"
           onChange={handleChange}
         >
-          <MenuItem value={Sepolia.id}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <ListItemIcon>
-                <Image src={Sepolia.icon} height={32} width={32} alt={Sepolia.name}/>
-              </ListItemIcon>
-              <ListItemText>{Sepolia.name}</ListItemText>
-            </div>
-          </MenuItem>
-          <MenuItem value={BaseSepolia.id}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <ListItemIcon>
-                <Image src={BaseSepolia.icon} height={32} width={32} alt={BaseSepolia.name}/>
-              </ListItemIcon>
-              <ListItemText>{BaseSepolia.name}</ListItemText>
-            </div>
-          </MenuItem>
+          {AllChains.map(chain => <ChainItem chain={chain} key={`chain_item_${chain.id}`} />)}
         </Select>
       </FormControl>
     </Box>
+  );
+}
+
+function ChainItem({ chain }: { chain: ChainConfig }) {
+  return (
+    <MenuItem value={chain.id}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <ListItemIcon>
+          <Image src={chain.icon} height={32} width={32} alt={chain.name} />
+        </ListItemIcon>
+        <ListItemText>{chain.name}</ListItemText>
+      </div>
+    </MenuItem>
   );
 }
