@@ -1,13 +1,15 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-import { type Hash } from '@/types/models'
+import { type Hash, type Address } from '@/types/models'
 import { type ChainConfig } from '@/app/config/chains'
 
 type TransferRecord = {
-    status: 'burning' | 'burned' | 'signing' | 'waiting' | 'receiving' | 'completed' | 'error',
+    status: 'burning' | 'signing' | 'waiting' | 'receiving' | 'completed' | 'error',
     fromChainId: ChainConfig['id'],
+    fromAddress: Address,
     toChainId: ChainConfig['id'],
-    amount: bigint,
+    toAddress: Address,
+    amount: string,
     burnTxHash: Hash,
     messageHash?: Hash,
     signature?: string,

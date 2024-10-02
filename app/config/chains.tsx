@@ -1,4 +1,4 @@
-import { baseSepolia, sepolia, type Chain } from "viem/chains";
+import { baseSepolia, sepolia, type Chain } from "@wagmi/core/chains";
 import { type Address } from '@/types/models'
 
 type PublicPath = string;

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { headers } from "next/headers";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
-import ContextProvider from "./context/WagmiContextProvider";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
+import ContextProvider from "./context/WagmiContextProvider";
 import theme from './theme'
 import "./globals.css";
 

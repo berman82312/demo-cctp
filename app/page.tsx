@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { Button, Divider, InputAdornment, TextField } from "@mui/material";
 import ConnectButton from "./components/ConnectButton";
@@ -10,17 +10,19 @@ import { AccountBalance } from "./components/AccountBalance";
 import { CCTP } from "../lib/CCTP";
 import { useAccountBalance } from "../hooks/useAccountBalance";
 import { formatUnits, parseUnits } from "viem";
+import { TransferDialog } from "./components/TransferDialog";
 
 export default function Home() {
   const { address } = useAccount()
   const [source, setSource] = useState<ChainConfig>()
   const [destination, setDestination] = useState<ChainConfig>()
   const [amount, setAmount] = useState('')
+  const transferDialogRef = useRef<TransferDialog>()
 
   const { balance, decimal: sourceTokenDecimal, isSuccess } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
 
   const sameChain = !!source?.id && source?.id === destination?.id
-  const showSourceBalance = isSuccess 
+  const showSourceBalance = isSuccess
   const showDestinationBalance = !!address && !!destination
   const isValidAmount = amount === '' || Number(amount) >= 0
   const isNotZero = Number(amount) > 0
@@ -39,9 +41,7 @@ export default function Home() {
     if (!canTransfer) {
       return
     }
-    const cctp = new CCTP()
-    const unitAmount = parseUnits(amount, sourceTokenDecimal!)
-    cctp.transfer(source.usdc, unitAmount, source, address, destination, address)
+    transferDialogRef.current?.transfer(source.usdc, parseUnits(amount, sourceTokenDecimal), sourceTokenDecimal, source, address, destination, address)
   }
 
   return (
@@ -50,7 +50,7 @@ export default function Home() {
         <ConnectButton />
         <h2 className="text-2xl">Transfer your USDC</h2>
         <ChainSelector
-          selectedId={source?.id}
+          selectedId={source?.id ?? ''}
           options={AllChains}
           onSelect={onSelectSource}
           idPrefix="source-chain"
@@ -79,13 +79,14 @@ export default function Home() {
         <Divider className="w-full">To</Divider>
         <ChainSelector
           errorMessage={sameChain ? 'Please select a different chain' : undefined}
-          selectedId={destination?.id}
+          selectedId={destination?.id ?? ''}
           options={AllChains}
           onSelect={onSelectDestination}
           idPrefix="destination-chain"
           label="To chain" />
         {showDestinationBalance && (<p className="-mt-6">Balance: <AccountBalance address={address} chainId={destination.chainId} token={destination.usdc} /></p>)}
         <Button disabled={!canTransfer} variant="contained" onClick={transfer}>Transfer</Button>
+        <TransferDialog ref={transferDialogRef} />
       </main>
     </div>
   );
