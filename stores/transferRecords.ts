@@ -1,9 +1,13 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { type Hash } from '@/types/models'
+import { type ChainConfig } from '@/app/config/chains'
 
 type TransferRecord = {
     status: 'burning' | 'burned' | 'signing' | 'waiting' | 'receiving' | 'completed' | 'error',
+    fromChainId: ChainConfig['id'],
+    toChainId: ChainConfig['id'],
+    amount: bigint,
     burnTxHash: Hash,
     messageHash?: Hash,
     signature?: string,

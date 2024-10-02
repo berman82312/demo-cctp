@@ -9,7 +9,7 @@ import { AllChains, ChainConfig } from "./config/chains";
 import { AccountBalance } from "./components/AccountBalance";
 import { CCTP } from "../lib/CCTP";
 import { useAccountBalance } from "../hooks/useAccountBalance";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 
 export default function Home() {
   const { address } = useAccount()
@@ -17,10 +17,10 @@ export default function Home() {
   const [destination, setDestination] = useState<ChainConfig>()
   const [amount, setAmount] = useState('')
 
-  const { balance, decimal: sourceTokenDecimal } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
+  const { balance, decimal: sourceTokenDecimal, isSuccess } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
 
   const sameChain = !!source?.id && source?.id === destination?.id
-  const showSourceBalance = !!address && !!source
+  const showSourceBalance = isSuccess 
   const showDestinationBalance = !!address && !!destination
   const isValidAmount = amount === '' || Number(amount) >= 0
   const isNotZero = Number(amount) > 0
@@ -55,7 +55,7 @@ export default function Home() {
           onSelect={onSelectSource}
           idPrefix="source-chain"
           label="From chain" />
-        {showSourceBalance && (<p className="-mt-6">Balance: <AccountBalance address={address} chainId={source.chainId} token={source.usdc} /></p>)}
+        {showSourceBalance && (<p className="-mt-6">Balance: {formatUnits(balance!, sourceTokenDecimal!)}</p>)}
         <TextField
           error={amount !== '' && (!isValidAmount || !isNotZero || !isEnoughBalance)}
           type="number"
