@@ -1,4 +1,4 @@
-import { type Hash } from '@/app/types/models'
+import { type Hash } from '@/types/models'
 export class AttestationService {
     async getSignature(messageHash: Hash) {
         let attestationResponse = { status: 'pending', attestation: '' };

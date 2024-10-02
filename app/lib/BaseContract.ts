@@ -1,6 +1,6 @@
 import { parseEventLogs } from 'viem';
 import { readContract, writeContract, waitForTransactionReceipt } from '@wagmi/core';
-import { type Abi, type Address, type TransactionReceipt, type Hash } from '@/app/types/models'
+import { type Abi, type Address, type TransactionReceipt, type Hash } from '@/types/models'
 import { config } from '../config/WagmiConfig';
 
 export class BaseContract {

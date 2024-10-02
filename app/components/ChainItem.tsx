@@ -1,4 +1,5 @@
 'use client';
+
 import { ListItemIcon, ListItemText } from "@mui/material";
 import Image from "next/image";
 import { ChainConfig } from "../config/chains";

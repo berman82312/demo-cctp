@@ -1,7 +1,7 @@
 
-import { Address } from "@/app/types/models";
-import { erc20Abi, formatEther, formatUnits } from "viem";
-import { useAccount, useBalance, useReadContract } from "wagmi";
+import { Address } from "@/types/models";
+import { erc20Abi, formatUnits } from "viem";
+import { useReadContract } from "wagmi";
 
 type UseAccountBalancePayload = {
     address?: Address;

@@ -1,14 +1,14 @@
 
 'use client'
 
+import { FormHelperText } from '@mui/material';
 import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { AllChains, ChainConfig } from '../config/chains';
 import { ChainItem } from './ChainItem';
-import { FormHelperText } from '@mui/material';
 
 export interface ChainSelectorProps {
     selectedId?: ChainConfig['id'],

@@ -1,4 +1,4 @@
-import { type Address } from '@/app/types/models'
+import { type Address } from '@/types/models'
 import { type ChainConfig } from "../config/chains";
 import { ERC20 } from "./ERC20";
 import { TokenMessenger } from "./TokenMessenger";
@@ -22,7 +22,8 @@ export class CCTP {
         await tokenContract.approveCheck(fromAddress, tokenMessenger.address, amount)
 
         // Call depositForBurn
-        const messageHash = await tokenMessenger.depositForBurn(token, amount, toChain, toAddress)
+        const txHash = await tokenMessenger.depositForBurn(token, amount, toChain, toAddress)
+        const messageHash = await tokenMessenger.parseMessageHash(txHash)
         console.log("Message hash: ", messageHash)
 
         // Fetch attestation signature

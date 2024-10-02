@@ -1,6 +1,6 @@
 import { erc20Abi } from "viem";
 import BaseContract from "./BaseContract";
-import { type Address } from '@/app/types/models'
+import { type Address } from '@/types/models'
 
 export class ERC20 extends BaseContract {
     constructor(address: Address) {

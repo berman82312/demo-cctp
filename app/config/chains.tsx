@@ -1,5 +1,5 @@
 import { baseSepolia, sepolia, type Chain } from "viem/chains";
-import { type Address } from '@/app/types/models'
+import { type Address } from '@/types/models'
 
 type PublicPath = string;
 
