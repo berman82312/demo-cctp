@@ -33,6 +33,7 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
     const [status, setStatus] = useState<TransferDialogStatus>(InitStatus)
 
     const showLoading = status.step !== 'signature' && !status.errorMessage
+    const showCancel = status.step === 'signature' || !!status.errorMessage
 
     useImperativeHandle(ref, () => {
         return {
@@ -62,6 +63,30 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
                 message: 'Fetching message hash...',
                 burnTxHash: txHash
             }))
+
+            const messageHash = await cctp.parseMessageHash(txHash)
+            updateRecord(txHash, {
+                status: 'signing',
+                messageHash
+            })
+            setStatus(prev => ({
+                ...prev,
+                step: 'message',
+                message: 'Fetching signature...',
+                burnTxHash: txHash
+            }))
+
+            const signature = await cctp.getSignature(messageHash)
+            updateRecord(txHash, {
+                status: 'waiting',
+                signature
+            })
+            setStatus(prev => ({
+                ...prev,
+                step: 'signature',
+                message: `USDC transferred to ${destination.name}. Do you want to receive now?`,
+                burnTxHash: txHash
+            }))
         } catch (err: any) {
             if (err.message.includes('User rejected')) {
                 setStatus(InitStatus)
@@ -75,30 +100,6 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
             }))
             return
         }
-
-        const messageHash = await cctp.parseMessageHash(txHash)
-        updateRecord(txHash, {
-            status: 'signing',
-            messageHash
-        })
-        setStatus(prev => ({
-            ...prev,
-            step: 'message',
-            message: 'Fetching signature...',
-            burnTxHash: txHash
-        }))
-
-        const signature = await cctp.getSignature(messageHash)
-        updateRecord(txHash, {
-            status: 'waiting',
-            signature
-        })
-        setStatus(prev => ({
-            ...prev,
-            step: 'signature',
-            message: `USDC transferred to ${destination.name}. Do you want to receive now?`,
-            burnTxHash: txHash
-        }))
     }
 
     function closeDialog() {
@@ -124,8 +125,9 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
             </DialogContent>
             <DialogActions>
                 {showLoading ? <div className="flex w-full justify-center p-4"><CircularProgress /></div> : null}
-                {status.errorMessage ? <Button variant="contained" onClick={closeDialog}>Close</Button> : null}
+                {showCancel ? <Button variant="contained" onClick={closeDialog}>Close</Button> : null}
                 {status.step === 'signature' ? <Button variant="contained" onClick={receive}>Receive</Button> : null}
+                {status.step === 'complete' ? <Button variant="contained" onClick={closeDialog}>Done</Button> : null}
             </DialogActions>
         </Dialog>
     )
