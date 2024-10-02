@@ -1,7 +1,7 @@
 import { keccak256, pad } from 'viem'
 import { type Address, type Hash, type Hex, type Abi } from '@/types/models'
-import abi from '@/app/abi/TokenMessenger.json'
-import messageTransmitterAbi from '@/app/abi/MessageTransmitter.json'
+import abi from '@/abi/TokenMessenger.json'
+import messageTransmitterAbi from '@/abi/MessageTransmitter.json'
 import { ChainConfig } from '../config/chains'
 import BaseContract from './BaseContract'
 
