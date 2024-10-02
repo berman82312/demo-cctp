@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-import { type Hash, type Address } from '@/types/models'
+import { type Hash, type Hex, type Address } from '@/types/models'
 import { type ChainConfig } from '@/app/config/chains'
 
 type TransferRecord = {
@@ -11,7 +11,7 @@ type TransferRecord = {
     toAddress: Address,
     amount: string,
     burnTxHash: Hash,
-    messageHash?: Hash,
+    messageBytes?: Hex,
     signature?: string,
     receiveTxHash?: Hash,
     errorMessage?: string

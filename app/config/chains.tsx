@@ -1,4 +1,4 @@
-import { baseSepolia, sepolia, type Chain } from "@wagmi/core/chains";
+import { baseSepolia, sepolia, arbitrumSepolia, type Chain } from "@wagmi/core/chains";
 import { type Address } from '@/types/models'
 
 type PublicPath = string;
@@ -39,7 +39,20 @@ export const BaseSepolia: ChainConfig = {
     messageTransmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD'
 }
 
+export const ArbitrumSepolia: ChainConfig = {
+    id: 'arbitrum_sepolia',
+    name: 'Arbitrum Sepolia',
+    chainId: arbitrumSepolia.id,
+    cctpId: 3,
+    icon: '/icons/arbitrum-sepolia.svg',
+    isTestnet: true,
+    usdc: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
+    tokenMessenger: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
+    messageTransmitter: '0xaCF1ceeF35caAc005e15888dDb8A3515C41B4872'
+}
+
 export const AllChains = [
     Sepolia,
-    BaseSepolia
+    BaseSepolia,
+    ArbitrumSepolia
 ]

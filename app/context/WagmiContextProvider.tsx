@@ -1,6 +1,6 @@
 'use client'
 
-import { wagmiAdapter, projectId } from '@/app/config/WagmiConfig'
+import { wagmiAdapter, projectId, arbitrumSepoliaCaip } from '@/app/config/WagmiConfig'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createAppKit } from '@reown/appkit/react' 
 import { sepolia, baseSepolia } from '@reown/appkit/networks'
@@ -26,7 +26,7 @@ const metadata = {
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [sepolia, baseSepolia],
+  networks: [sepolia, baseSepolia, arbitrumSepoliaCaip],
   defaultNetwork: sepolia,
   metadata: metadata,
 })

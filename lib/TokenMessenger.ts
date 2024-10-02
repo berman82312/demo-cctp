@@ -1,4 +1,4 @@
-import { keccak256, pad } from 'viem'
+import { pad } from 'viem'
 import { type Address, type Hash, type Hex, type Abi } from '@/types/models'
 import abi from '@/abi/TokenMessenger.json'
 import messageTransmitterAbi from '@/abi/MessageTransmitter.json'
@@ -26,7 +26,7 @@ export class TokenMessenger extends BaseContract {
         return txHash
     }
 
-    async parseMessageHash(txHash: Hash) {
+    async parseMessageBytes(txHash: Hash) {
         const receipt = await this.waitForReceipt(txHash)
 
         const logs = this.parseReceiptLogs(receipt, 'MessageSent', messageTransmitterAbi as Abi)
@@ -37,7 +37,7 @@ export class TokenMessenger extends BaseContract {
 
         const args = logs[0].args as MessageSentEvent
         const messageBytes = args.message
-
-        return keccak256(messageBytes)
+        
+        return messageBytes
     }
 }

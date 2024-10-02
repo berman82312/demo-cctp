@@ -1,8 +1,8 @@
 import { CCTP } from "@/lib/CCTP";
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, type DialogProps } from "@mui/material";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { type ChainConfig } from "../config/chains";
-import { type Address, type Hash } from '@/types/models'
+import { type Address, type Hash, type Hex } from '@/types/models'
 import { useTransferRecordsStore } from "@/stores/transferRecords";
 import { formatUnits } from "viem";
 
@@ -15,8 +15,9 @@ type TransferDialogStatus = {
     message: string
     errorMessage: string | null
     burnTxHash?: Hash
-    messageHash?: Hash
+    messageBytes?: Hex
     signature?: string
+    receiveTxHash?: Hash
 }
 
 const InitStatus = {
@@ -31,8 +32,9 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
 
     const [open, setOpen] = useState(false)
     const [status, setStatus] = useState<TransferDialogStatus>(InitStatus)
+    const cctp = useRef<CCTP>()
 
-    const showLoading = status.step !== 'signature' && !status.errorMessage
+    const showLoading = status.step !== 'signature' && status.step !== 'complete' && !status.errorMessage
     const showCancel = status.step === 'signature' || !!status.errorMessage
 
     useImperativeHandle(ref, () => {
@@ -44,10 +46,10 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
     async function transfer(token: Address, amount: bigint, decimal: number, source: ChainConfig, fromAddress: Address, destination: ChainConfig, toAddress: Address) {
         setOpen(true)
 
-        const cctp = new CCTP(source, destination)
+        cctp.current = new CCTP(source, destination)
         let txHash: Hash
         try {
-            txHash = await cctp.transfer(token, amount, fromAddress, toAddress)
+            txHash = await cctp.current.transfer(token, amount, fromAddress, toAddress)
             addRecord({
                 status: 'burning',
                 fromChainId: source.id,
@@ -64,19 +66,19 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
                 burnTxHash: txHash
             }))
 
-            const messageHash = await cctp.parseMessageHash(txHash)
+            const messageBytes = await cctp.current.parseMessageBytes(txHash)
             updateRecord(txHash, {
                 status: 'signing',
-                messageHash
+                messageBytes: messageBytes
             })
             setStatus(prev => ({
                 ...prev,
                 step: 'message',
-                message: 'Fetching signature...',
-                burnTxHash: txHash
+                message: 'Fetching signature, this may take a few minutes...',
+                messageBytes
             }))
 
-            const signature = await cctp.getSignature(messageHash)
+            const signature = await cctp.current.getSignature(messageBytes)
             updateRecord(txHash, {
                 status: 'waiting',
                 signature
@@ -85,7 +87,7 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
                 ...prev,
                 step: 'signature',
                 message: `USDC transferred to ${destination.name}. Do you want to receive now?`,
-                burnTxHash: txHash
+                signature
             }))
         } catch (err: any) {
             if (err.message.includes('User rejected')) {
@@ -93,6 +95,7 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
                 setOpen(false)
                 return
             }
+            // Should handle error
             console.error(err)
             setStatus(prev => ({
                 ...prev,
@@ -107,7 +110,65 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
         setStatus(InitStatus)
     }
 
-    function receive() { }
+    function clearError() {
+        setStatus(prev => ({
+            ...prev,
+            errorMessage: null
+        }))
+    }
+
+    async function receive() {
+        if (!cctp.current || !status.messageBytes || !status.signature || !status.burnTxHash) {
+            setStatus(prev => ({
+                ...prev,
+                errorMessage: 'Data broken!'
+            }))
+            return
+        }
+
+        clearError()
+
+        try {
+            const receiveTxHash = await cctp.current.receive(status.messageBytes, status.signature)
+            updateRecord(status.burnTxHash, {
+                status: 'receiving',
+                receiveTxHash,
+            })
+            setStatus(prev => ({
+                ...prev,
+                step: 'receive',
+                message: 'Receiving USDC...',
+                receiveTxHash
+            }))
+
+            const receiveReceipt = await cctp.current.messageTransmitter.waitForReceipt(receiveTxHash)
+            if (receiveReceipt.status === 'success') {
+                updateRecord(status.burnTxHash, {
+                    status: 'completed'
+                })
+                setStatus(prev => ({
+                    ...prev,
+                    step: 'complete',
+                    message: 'USDC received!'
+                }))
+                return
+            }
+            updateRecord(status.burnTxHash, {
+                status: 'error',
+                errorMessage: 'Receive transaction status not success'
+            })
+            setStatus(prev => ({
+                ...prev,
+                errorMessage: 'Receive transaction status not success'
+            }))
+        } catch (err: any) {
+            setStatus(prev => ({
+                ...prev,
+                errorMessage: err.message
+            }))
+            return
+        }
+    }
 
     const onClose: DialogProps['onClose'] = (event, reason) => {
         console.log("Close: ", event, reason)
