@@ -17,30 +17,24 @@ export const useAccountBalance = (payload: UseAccountBalancePayload) => {
         token,
         chainId
     } = payload;
-    
-    const { data, isSuccess } = useReadContract({
+
+    const { data } = useReadContract({
         chainId: chainId,
         abi: erc20Abi,
         address: token,
         functionName: 'balanceOf',
         args: [address ?? EmptyAddress]
     })
-    const {data: decimal, isSuccess: isDecimalSuccess} = useReadContract({
-       chainId: chainId,
-       abi: erc20Abi,
-       address: token,
-       functionName: 'decimals',
-       args: [] 
+    const { data: decimal } = useReadContract({
+        chainId: chainId,
+        abi: erc20Abi,
+        address: token,
+        functionName: 'decimals',
+        args: []
     })
-    
-    let balance
-
-    if (isSuccess && isDecimalSuccess) {
-        balance = formatUnits(data, decimal)
-    }
 
     return {
-        balance,
+        balance: data,
         decimal
     }
 }

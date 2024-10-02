@@ -17,13 +17,15 @@ export default function Home() {
   const [destination, setDestination] = useState<ChainConfig>()
   const [amount, setAmount] = useState('')
 
-  const { decimal: sourceTokenDecimal } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
+  const { balance, decimal: sourceTokenDecimal } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
 
   const sameChain = !!source?.id && source?.id === destination?.id
   const showSourceBalance = !!address && !!source
   const showDestinationBalance = !!address && !!destination
-  const isValidAmount = Number(amount) > 0
-  const canTransfer = source && destination && isValidAmount && !sameChain && !!address;
+  const isValidAmount = amount === '' || Number(amount) >= 0
+  const isNotZero = Number(amount) > 0
+  const isEnoughBalance = balance && sourceTokenDecimal && parseUnits(amount, sourceTokenDecimal) <= balance
+  const canTransfer = source && destination && isValidAmount && isNotZero && isEnoughBalance && !sameChain && !!address;
 
   function onSelectSource(id: ChainConfig['id']) {
     setSource(AllChains.find(chain => chain.id === id))
@@ -55,6 +57,7 @@ export default function Home() {
           label="From chain" />
         {showSourceBalance && (<p className="-mt-6">Balance: <AccountBalance address={address} chainId={source.chainId} token={source.usdc} /></p>)}
         <TextField
+          error={amount !== '' && (!isValidAmount || !isNotZero || !isEnoughBalance)}
           type="number"
           label="Amount"
           value={amount}
@@ -71,6 +74,7 @@ export default function Home() {
               step: '0.1'
             }
           }}
+          helperText={amount !== '' ? isValidAmount ? isNotZero ? isEnoughBalance ? undefined : 'Not enough balance' : 'Should not be 0' : 'Invalid amount' : undefined}
         />
         <Divider className="w-full">To</Divider>
         <ChainSelector

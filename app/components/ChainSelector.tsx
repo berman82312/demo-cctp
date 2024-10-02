@@ -22,8 +22,6 @@ export interface ChainSelectorProps {
 export default function ChainSelector(props: ChainSelectorProps) {
     const { options, selectedId, onSelect, label, idPrefix, errorMessage } = props;
 
-    const source = options.find(chain => chain.id === selectedId)
-
     const handleChange = (event: SelectChangeEvent) => {
         onSelect(event.target.value)
     };
@@ -39,7 +37,7 @@ export default function ChainSelector(props: ChainSelectorProps) {
                     label={label}
                     onChange={handleChange}
                 >
-                    {AllChains.map(chain => (
+                    {options.map(chain => (
                         <MenuItem value={chain.id} key={`chain_item_${chain.id}`}>
                             <ChainItem chain={chain} />
                         </MenuItem>
