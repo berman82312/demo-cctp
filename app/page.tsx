@@ -7,6 +7,9 @@ import ChainSelector from "./components/ChainSelector";
 import { AllChains, ChainConfig } from "./config/chains";
 import { useAccount } from "wagmi";
 import { AccountBalance } from "./components/AccountBalance";
+import { CCTP } from "./lib/CCTP";
+import { useAccountBalance } from "./hooks/useAccountBalance";
+import { parseUnits } from "viem";
 
 export default function Home() {
   const { address } = useAccount()
@@ -14,11 +17,13 @@ export default function Home() {
   const [destination, setDestination] = useState<ChainConfig>()
   const [amount, setAmount] = useState('')
 
+  const { decimal: sourceTokenDecimal } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
+
   const sameChain = !!source?.id && source?.id === destination?.id
   const showSourceBalance = !!address && !!source
   const showDestinationBalance = !!address && !!destination
   const isValidAmount = Number(amount) > 0
-  const canTransfer = source && destination && isValidAmount && !sameChain;
+  const canTransfer = source && destination && isValidAmount && !sameChain && !!address;
 
   function onSelectSource(id: ChainConfig['id']) {
     setSource(AllChains.find(chain => chain.id === id))
@@ -29,7 +34,12 @@ export default function Home() {
   }
 
   function transfer() {
-    console.log(`Transfer: ${amount} USDC from ${source?.name} to ${destination?.name}`)
+    if (!canTransfer) {
+      return
+    }
+    const cctp = new CCTP()
+    const unitAmount = parseUnits(amount, sourceTokenDecimal!)
+    cctp.transfer(source.usdc, unitAmount, source, address, destination, address)
   }
 
   return (

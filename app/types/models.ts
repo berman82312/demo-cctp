@@ -1,3 +1,3 @@
-import { type Address } from "viem";
+import { type Address, type Hash, type Abi, type TransactionReceipt } from "viem";
 
-export { Address }
+export { Address, Hash, Abi, TransactionReceipt }

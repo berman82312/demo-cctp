@@ -1,4 +1,4 @@
-import { cookieStorage, createStorage } from '@wagmi/core'
+import { cookieStorage, createStorage, type Config } from '@wagmi/core'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { sepolia, baseSepolia } from '@reown/appkit/networks'
 
