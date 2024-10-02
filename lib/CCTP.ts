@@ -1,9 +1,9 @@
 import { type Address } from '@/types/models'
-import { type ChainConfig } from "../config/chains";
+import { type ChainConfig } from "../app/config/chains";
 import { ERC20 } from "./ERC20";
 import { TokenMessenger } from "./TokenMessenger";
 import { switchChain } from '@wagmi/core';
-import { config } from '../config/WagmiConfig';
+import { config } from '../app/config/WagmiConfig';
 import { AttestationService } from './AttestationService';
 
 export class CCTP {

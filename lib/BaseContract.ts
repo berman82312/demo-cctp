@@ -1,7 +1,7 @@
 import { parseEventLogs } from 'viem';
 import { readContract, writeContract, waitForTransactionReceipt } from '@wagmi/core';
 import { type Abi, type Address, type TransactionReceipt, type Hash } from '@/types/models'
-import { config } from '../config/WagmiConfig';
+import { config } from '../app/config/WagmiConfig';
 
 export class BaseContract {
     abi: Abi

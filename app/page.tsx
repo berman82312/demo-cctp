@@ -7,7 +7,7 @@ import ConnectButton from "./components/ConnectButton";
 import ChainSelector from "./components/ChainSelector";
 import { AllChains, ChainConfig } from "./config/chains";
 import { AccountBalance } from "./components/AccountBalance";
-import { CCTP } from "./lib/CCTP";
+import { CCTP } from "../lib/CCTP";
 import { useAccountBalance } from "../hooks/useAccountBalance";
 import { parseUnits } from "viem";
 
