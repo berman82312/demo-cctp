@@ -87,7 +87,7 @@ export default function Home() {
           idPrefix="destination-chain"
           label="To chain" />
         {showDestinationBalance && (<p className="-mt-6">Balance: <AccountBalance address={address} chainId={destination.chainId} token={destination.usdc} /></p>)}
-        <Button disabled={!canTransfer} variant="contained" onClick={transfer}>Transfer</Button>
+        <Button fullWidth disabled={!canTransfer} variant="contained" onClick={transfer}>Transfer</Button>
         <TransferDialog ref={transferDialogRef} />
         <p className="mt-4">Transfer History</p>
         <TransferHistory />

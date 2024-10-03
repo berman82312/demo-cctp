@@ -10,9 +10,9 @@ import { AllChains } from "../config/chains"
 export const TransferHistory = () => {
     const records = useTransferRecordsStore(state => state.records)
     return (
-        <div>
+        <>
             {records.map(record => <TransferRecord record={record} key={`history_${record.burnTxHash}`} />)}
-        </div>
+        </>
     )
 }
 
@@ -155,7 +155,7 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
     }
 
     return (
-        <Card className="my-4 min-w-[270px] max-w-[375px]">
+        <Card className="w-full">
             <CardHeader
                 avatar={
                     <Chip label={getStatusLabel(record.status)} />
