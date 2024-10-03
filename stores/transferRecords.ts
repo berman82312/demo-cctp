@@ -3,7 +3,7 @@ import { devtools, persist } from 'zustand/middleware'
 import { type Hash, type Hex, type Address } from '@/types/models'
 import { type ChainConfig } from '@/app/config/chains'
 
-type TransferRecord = {
+export type TransferRecord = {
     status: 'burning' | 'signing' | 'waiting' | 'receiving' | 'completed' | 'error',
     fromChainId: ChainConfig['id'],
     fromAddress: Address,

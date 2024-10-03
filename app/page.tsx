@@ -20,14 +20,15 @@ export default function Home() {
   const [amount, setAmount] = useState('')
   const transferDialogRef = useRef<TransferDialog>()
 
-  const { balance, decimal: sourceTokenDecimal, isSuccess } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
+  const { balance: sourceBalance, decimal: sourceTokenDecimal, isSuccess } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
+  const { balance: destinationBalance, decimal: destinationDecimal, isSuccess: isDestinationSuccess } = useAccountBalance({ address, token: destination?.usdc, chainId: destination?.chainId })
 
   const sameChain = !!source?.id && source?.id === destination?.id
   const showSourceBalance = isSuccess
-  const showDestinationBalance = !!address && !!destination
+  const showDestinationBalance = isDestinationSuccess 
   const isValidAmount = amount === '' || Number(amount) >= 0
   const isNotZero = Number(amount) > 0
-  const isEnoughBalance = balance && sourceTokenDecimal && parseUnits(amount, sourceTokenDecimal) <= balance
+  const isEnoughBalance = sourceBalance && sourceTokenDecimal && parseUnits(amount, sourceTokenDecimal) <= sourceBalance
   const canTransfer = source && destination && isValidAmount && isNotZero && isEnoughBalance && !sameChain && !!address;
 
   function onSelectSource(id: ChainConfig['id']) {
@@ -56,7 +57,7 @@ export default function Home() {
           onSelect={onSelectSource}
           idPrefix="source-chain"
           label="From chain" />
-        {showSourceBalance && (<p className="-mt-6">Balance: {formatUnits(balance!, sourceTokenDecimal!)}</p>)}
+        {showSourceBalance && (<p className="-mt-6">Balance: {formatUnits(sourceBalance!, sourceTokenDecimal!)}</p>)}
         <TextField
           fullWidth
           error={amount !== '' && (!isValidAmount || !isNotZero || !isEnoughBalance)}
@@ -86,7 +87,7 @@ export default function Home() {
           onSelect={onSelectDestination}
           idPrefix="destination-chain"
           label="To chain" />
-        {showDestinationBalance && (<p className="-mt-6">Balance: <AccountBalance address={address} chainId={destination.chainId} token={destination.usdc} /></p>)}
+        {showDestinationBalance && (<p className="-mt-6">Balance: {formatUnits(destinationBalance!, destinationDecimal!)}</p>)}
         <Button fullWidth disabled={!canTransfer} variant="contained" onClick={transfer}>Transfer</Button>
         <TransferDialog ref={transferDialogRef} />
         <p className="mt-4">Transfer History</p>
