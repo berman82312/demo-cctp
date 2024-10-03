@@ -27,24 +27,22 @@ export default function ChainSelector(props: ChainSelectorProps) {
     };
 
     return (
-        <Box sx={{ minWidth: 240 }}>
-            <FormControl fullWidth error={!!errorMessage}>
-                <InputLabel id={`${idPrefix}-input-label`}>{label}</InputLabel>
-                <Select
-                    labelId={`${idPrefix}-select-label`}
-                    id={`${idPrefix}-select`}
-                    value={selectedId}
-                    label={label}
-                    onChange={handleChange}
-                >
-                    {options.map(chain => (
-                        <MenuItem value={chain.id} key={`chain_item_${chain.id}`}>
-                            <ChainItem chain={chain} />
-                        </MenuItem>
-                    ))}
-                </Select>
-                {errorMessage && <FormHelperText>{errorMessage}</FormHelperText>}
-            </FormControl>
-        </Box>
+        <FormControl fullWidth error={!!errorMessage}>
+            <InputLabel id={`${idPrefix}-input-label`}>{label}</InputLabel>
+            <Select
+                labelId={`${idPrefix}-select-label`}
+                id={`${idPrefix}-select`}
+                value={selectedId}
+                label={label}
+                onChange={handleChange}
+            >
+                {options.map(chain => (
+                    <MenuItem value={chain.id} key={`chain_item_${chain.id}`}>
+                        <ChainItem chain={chain} />
+                    </MenuItem>
+                ))}
+            </Select>
+            {errorMessage && <FormHelperText>{errorMessage}</FormHelperText>}
+        </FormControl>
     );
 }

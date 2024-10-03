@@ -11,6 +11,7 @@ import { CCTP } from "../lib/CCTP";
 import { useAccountBalance } from "../hooks/useAccountBalance";
 import { formatUnits, parseUnits } from "viem";
 import { TransferDialog } from "./components/TransferDialog";
+import { TransferHistory } from "./components/TransferHistory";
 
 export default function Home() {
   const { address } = useAccount()
@@ -57,6 +58,7 @@ export default function Home() {
           label="From chain" />
         {showSourceBalance && (<p className="-mt-6">Balance: {formatUnits(balance!, sourceTokenDecimal!)}</p>)}
         <TextField
+          fullWidth
           error={amount !== '' && (!isValidAmount || !isNotZero || !isEnoughBalance)}
           type="number"
           label="Amount"
@@ -87,6 +89,8 @@ export default function Home() {
         {showDestinationBalance && (<p className="-mt-6">Balance: <AccountBalance address={address} chainId={destination.chainId} token={destination.usdc} /></p>)}
         <Button disabled={!canTransfer} variant="contained" onClick={transfer}>Transfer</Button>
         <TransferDialog ref={transferDialogRef} />
+        <p className="mt-4">Transfer History</p>
+        <TransferHistory />
       </main>
     </div>
   );
