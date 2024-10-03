@@ -84,6 +84,9 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
                 await syncReceiveStatus(record.receiveTxHash)
             }
         } catch (err: any) {
+            if (err.message.includes('User rejected')) {
+                return
+            }
             setStatus(prev => ({
                 ...prev,
                 errorMessage: err.message
@@ -121,6 +124,9 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
 
             await syncReceiveStatus(receiveTxHash)
         } catch(err: any) {
+            if (err.message.includes('User rejected')) {
+                return
+            }
             setStatus(prev => ({
                 ...prev,
                 errorMessage: err.message
@@ -149,7 +155,7 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
     }
 
     return (
-        <Card className="my-4 min-w-[270px]">
+        <Card className="my-4 min-w-[270px] max-w-[375px]">
             <CardHeader
                 avatar={
                     <Chip label={getStatusLabel(record.status)} />
@@ -163,6 +169,7 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
             <CardContent>
                 <p className="mb-2">Transfer TX: <Link href={`${sourceChain?.explorerUrl}/tx/${record.burnTxHash}`} target="_blank">{maskedHash(record.burnTxHash)}</Link></p>
                 {record.receiveTxHash ? <p className="mb-2">Receive TX:<Link href={`${destinationChain?.explorerUrl}/tx/${record.receiveTxHash}`} target="_blank">{maskedHash(record.receiveTxHash)}</Link></p> : null}
+                {!!status.errorMessage && <p className="text-danger">{status.errorMessage}</p>}
             </CardContent>
             <CardActions>
                 {status.isLoading && <CircularProgress />}
