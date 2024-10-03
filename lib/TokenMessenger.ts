@@ -25,19 +25,4 @@ export class TokenMessenger extends BaseContract {
 
         return txHash
     }
-
-    async parseMessageBytes(txHash: Hash) {
-        const receipt = await this.waitForReceipt(txHash)
-
-        const logs = this.parseReceiptLogs(receipt, 'MessageSent', messageTransmitterAbi as Abi)
-
-        if (logs.length < 1) {
-            throw new Error('No MessageSent event')
-        }
-
-        const args = logs[0].args as MessageSentEvent
-        const messageBytes = args.message
-        
-        return messageBytes
-    }
 }

@@ -41,7 +41,8 @@ export class CCTP {
 
     async parseMessageBytes(txHash: Hash) {
         await this.checkChain(this.source)
-        const messageBytes = await this.tokenMessenger.parseMessageBytes(txHash)
+        const messageTransmitter = MessageTransmitter.fromChainConfig(this.source)
+        const messageBytes = await messageTransmitter.parseMessageBytes(txHash)
         return messageBytes
     }
 
