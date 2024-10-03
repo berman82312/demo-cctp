@@ -38,72 +38,73 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
     const showCancel = status.step === 'signature' || !!status.errorMessage
 
     useImperativeHandle(ref, () => {
+        async function transfer(token: Address, amount: bigint, decimal: number, source: ChainConfig, fromAddress: Address, destination: ChainConfig, toAddress: Address) {
+            setOpen(true)
+
+            cctp.current = new CCTP(source, destination)
+            let txHash: Hash
+            try {
+                txHash = await cctp.current.transfer(token, amount, fromAddress, toAddress)
+                addRecord({
+                    status: 'burning',
+                    fromChainId: source.id,
+                    fromAddress,
+                    toChainId: destination.id,
+                    toAddress,
+                    amount: formatUnits(amount, decimal),
+                    burnTxHash: txHash,
+                })
+                setStatus(prev => ({
+                    ...prev,
+                    step: 'burn',
+                    message: 'Fetching message hash...',
+                    burnTxHash: txHash
+                }))
+
+                const messageBytes = await cctp.current.parseMessageBytes(txHash)
+                updateRecord(txHash, {
+                    status: 'signing',
+                    messageBytes: messageBytes
+                })
+                setStatus(prev => ({
+                    ...prev,
+                    step: 'message',
+                    message: 'Fetching signature, this may take a few minutes...',
+                    messageBytes
+                }))
+
+                const signature = await cctp.current.getSignature(messageBytes)
+                updateRecord(txHash, {
+                    status: 'waiting',
+                    signature
+                })
+                setStatus(prev => ({
+                    ...prev,
+                    step: 'signature',
+                    message: `USDC transferred to ${destination.name}. Do you want to receive now?`,
+                    signature
+                }))
+            } catch (err: unknown) {
+                const error = err as Error
+                if (error.message.includes('User rejected')) {
+                    setStatus(InitStatus)
+                    setOpen(false)
+                    return
+                }
+                // Should handle error
+                console.error(err)
+                setStatus(prev => ({
+                    ...prev,
+                    errorMessage: error.message
+                }))
+                return
+            }
+        }
         return {
             transfer
         }
     }, [])
 
-    async function transfer(token: Address, amount: bigint, decimal: number, source: ChainConfig, fromAddress: Address, destination: ChainConfig, toAddress: Address) {
-        setOpen(true)
-
-        cctp.current = new CCTP(source, destination)
-        let txHash: Hash
-        try {
-            txHash = await cctp.current.transfer(token, amount, fromAddress, toAddress)
-            addRecord({
-                status: 'burning',
-                fromChainId: source.id,
-                fromAddress,
-                toChainId: destination.id,
-                toAddress,
-                amount: formatUnits(amount, decimal),
-                burnTxHash: txHash,
-            })
-            setStatus(prev => ({
-                ...prev,
-                step: 'burn',
-                message: 'Fetching message hash...',
-                burnTxHash: txHash
-            }))
-
-            const messageBytes = await cctp.current.parseMessageBytes(txHash)
-            updateRecord(txHash, {
-                status: 'signing',
-                messageBytes: messageBytes
-            })
-            setStatus(prev => ({
-                ...prev,
-                step: 'message',
-                message: 'Fetching signature, this may take a few minutes...',
-                messageBytes
-            }))
-
-            const signature = await cctp.current.getSignature(messageBytes)
-            updateRecord(txHash, {
-                status: 'waiting',
-                signature
-            })
-            setStatus(prev => ({
-                ...prev,
-                step: 'signature',
-                message: `USDC transferred to ${destination.name}. Do you want to receive now?`,
-                signature
-            }))
-        } catch (err: any) {
-            if (err.message.includes('User rejected')) {
-                setStatus(InitStatus)
-                setOpen(false)
-                return
-            }
-            // Should handle error
-            console.error(err)
-            setStatus(prev => ({
-                ...prev,
-                errorMessage: err.message
-            }))
-            return
-        }
-    }
 
     function closeDialog() {
         setOpen(false)
@@ -161,10 +162,11 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
                 ...prev,
                 errorMessage: 'Receive transaction status not success'
             }))
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const error = err as Error
             setStatus(prev => ({
                 ...prev,
-                errorMessage: err.message
+                errorMessage: error.message
             }))
             return
         }
@@ -193,3 +195,5 @@ export const TransferDialog = forwardRef<TransferDialog>((props, ref) => {
         </Dialog>
     )
 })
+
+TransferDialog.displayName = 'TransferDialog'

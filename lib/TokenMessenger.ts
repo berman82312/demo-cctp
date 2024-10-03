@@ -1,13 +1,8 @@
 import { pad } from 'viem'
-import { type Address, type Hash, type Hex, type Abi } from '@/types/models'
+import { type Address, type Abi } from '@/types/models'
 import abi from '@/abi/TokenMessenger.json'
-import messageTransmitterAbi from '@/abi/MessageTransmitter.json'
 import { ChainConfig } from '../app/config/chains'
 import BaseContract from './BaseContract'
-
-type MessageSentEvent = {
-    message: Hex
-}
 
 export class TokenMessenger extends BaseContract {
 

@@ -1,4 +1,4 @@
-import { parseEventLogs } from 'viem';
+import { type ContractFunctionParameters, parseEventLogs } from 'viem';
 import { readContract, writeContract, waitForTransactionReceipt } from '@wagmi/core';
 import { type Abi, type Address, type TransactionReceipt, type Hash } from '@/types/models'
 import { config } from '../app/config/WagmiConfig';
@@ -12,7 +12,7 @@ export class BaseContract {
         this.address = address;
     }
 
-    async read<T>(functionName: string, args: Array<any>): Promise<T> {
+    async read<T>(functionName: string, args: ContractFunctionParameters['args']): Promise<T> {
         const result = await readContract(config, {
             abi: this.abi,
             address: this.address,
@@ -23,7 +23,7 @@ export class BaseContract {
         return result as T;
     }
 
-    async write(functionName: string, args: Array<any>, value?: bigint) {
+    async write(functionName: string, args: ContractFunctionParameters['args'], value?: bigint) {
         const result = await writeContract(config, {
             abi: this.abi,
             address: this.address,
@@ -44,7 +44,7 @@ export class BaseContract {
     }
 
     parseReceiptLogs(receipt: TransactionReceipt, eventName?: string, abi?: Abi) {
-        let logs = parseEventLogs({
+        const logs = parseEventLogs({
             abi: abi ?? this.abi,
             eventName,
             logs: receipt.logs,

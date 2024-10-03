@@ -16,11 +16,16 @@ export const TransferHistory = () => {
     )
 }
 
+type TransferRecordStatus = {
+    isLoading: boolean,
+    errorMessage?: string | null
+}
+
 const TransferRecord = ({ record }: { record: RecordType }) => {
     const updateRecord = useTransferRecordsStore(state => state.updateRecord)
     const removeRecord = useTransferRecordsStore(state => state.removeRecord)
 
-    const [status, setStatus] = useState({
+    const [status, setStatus] = useState<TransferRecordStatus>({
         isLoading: false,
         errorMessage: null
     })
@@ -83,13 +88,14 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
             if (record.receiveTxHash && record.status !== 'completed') {
                 await syncReceiveStatus(record.receiveTxHash)
             }
-        } catch (err: any) {
-            if (err.message.includes('User rejected')) {
+        } catch (err: unknown) {
+            const error = err as Error
+            if (error.message.includes('User rejected')) {
                 return
             }
             setStatus(prev => ({
                 ...prev,
-                errorMessage: err.message
+                errorMessage: error.message
             }))
         } finally {
             setStatus(prev => ({
@@ -115,7 +121,7 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
 
             let receiveTxHash = record.receiveTxHash
             if (!receiveTxHash) {
-                receiveTxHash = await cctp.receive(record.messageBytes, record.signature)
+                receiveTxHash = await cctp.receive(record.messageBytes!, record.signature!)
                 updateRecord(record.burnTxHash, {
                     status: 'receiving',
                     receiveTxHash
@@ -123,13 +129,14 @@ const TransferRecord = ({ record }: { record: RecordType }) => {
             }
 
             await syncReceiveStatus(receiveTxHash)
-        } catch(err: any) {
-            if (err.message.includes('User rejected')) {
+        } catch (err: unknown) {
+            const error = err as Error
+            if (error.message.includes('User rejected')) {
                 return
             }
             setStatus(prev => ({
                 ...prev,
-                errorMessage: err.message
+                errorMessage: error.message
             }))
         } finally {
             setStatus(prev => ({

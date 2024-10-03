@@ -16,7 +16,7 @@ export default function Home() {
   const [source, setSource] = useState<ChainConfig>()
   const [destination, setDestination] = useState<ChainConfig>()
   const [amount, setAmount] = useState('')
-  const transferDialogRef = useRef<TransferDialog>()
+  const transferDialogRef = useRef<TransferDialog>(null)
 
   const { balance: sourceBalance, decimal: sourceTokenDecimal, isSuccess } = useAccountBalance({ address, token: source?.usdc, chainId: source?.chainId })
   const { balance: destinationBalance, decimal: destinationDecimal, isSuccess: isDestinationSuccess } = useAccountBalance({ address, token: destination?.usdc, chainId: destination?.chainId })
