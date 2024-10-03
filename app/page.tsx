@@ -6,8 +6,6 @@ import { Button, Divider, InputAdornment, TextField } from "@mui/material";
 import ConnectButton from "./components/ConnectButton";
 import ChainSelector from "./components/ChainSelector";
 import { AllChains, ChainConfig } from "./config/chains";
-import { AccountBalance } from "./components/AccountBalance";
-import { CCTP } from "../lib/CCTP";
 import { useAccountBalance } from "../hooks/useAccountBalance";
 import { formatUnits, parseUnits } from "viem";
 import { TransferDialog } from "./components/TransferDialog";
